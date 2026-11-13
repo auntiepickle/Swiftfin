@@ -6,6 +6,7 @@
 // Copyright (c) 2026 Jellyfin & Jellyfin Contributors
 //
 
+import Transmission
 import UIKit
 
 #if os(iOS)
@@ -20,7 +21,20 @@ extension UIViewController {
 
     @objc
     private func preferencesSupportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-        preferencesHostingController()?.supportedInterfaceOrientations ?? .all
+        // TODO: temporary iPhone Duo experiment, remove before upstreaming
+        if RotationDiagnostics.isFixEnabled,
+           let presentedViewController,
+           !presentedViewController.isBeingDismissed,
+           presentedViewController.presentationController is FullScreenPresentationController
+        {
+            let mask = presentedViewController.supportedInterfaceOrientations
+            RotationDiagnostics.answered(self, mask, note: "(forwarded to presented)")
+            return mask
+        }
+
+        let mask = preferencesHostingController()?.supportedInterfaceOrientations ?? .all
+        RotationDiagnostics.answered(self, mask)
+        return mask
     }
 
     private func preferencesHostingController() -> UIPreferencesHostingController? {

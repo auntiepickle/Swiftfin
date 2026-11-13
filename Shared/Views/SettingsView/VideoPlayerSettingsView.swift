@@ -63,6 +63,10 @@ struct VideoPlayerSettingsView: View {
     #if os(iOS)
     @Default(.VideoPlayer.Transition.automaticPictureInPicture)
     private var automaticPictureInPicture
+
+    // TODO: temporary iPhone Duo experiment, remove before upstreaming
+    @AppStorage(RotationDiagnostics.fixDefaultsKey)
+    private var duoRotationFix = false
     #endif
 
     // MARK: - Timestamp Defaults
@@ -140,6 +144,8 @@ struct VideoPlayerSettingsView: View {
 
             #if os(iOS)
             Toggle(L10n.automaticPictureInPicture, isOn: $automaticPictureInPicture)
+
+            Toggle("Duo rotation fix (test)", isOn: $duoRotationFix)
             #endif
         }
     }

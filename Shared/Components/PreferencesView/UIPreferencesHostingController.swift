@@ -94,16 +94,35 @@ class UIPreferencesHostingController: UIHostingController<AnyView> {
 
     private var _orientations: UIInterfaceOrientationMask = .all {
         didSet {
+            RotationDiagnostics.maskChanged(self, from: oldValue, to: _orientations)
             setNeedsUpdateOfSupportedInterfaceOrientations()
         }
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        _orientations
+        RotationDiagnostics.answered(self, _orientations)
+        return _orientations
     }
 
     override var shouldAutorotate: Bool {
         true
+    }
+
+    // TODO: temporary iPhone Duo rotation diagnostics, remove before upstreaming
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        RotationDiagnostics.didAppear(self, mask: _orientations)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        RotationDiagnostics.willDisappear(self)
+    }
+
+    override func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        RotationDiagnostics.willTransition(self, to: size, with: coordinator)
     }
 
     // MARK: Defer Edges
