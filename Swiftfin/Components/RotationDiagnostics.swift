@@ -168,7 +168,7 @@ enum RotationDiagnostics {
         return [
             "interface=\(name(geometry.interfaceOrientation))",
             "device=\(name(UIDevice.current.orientation))",
-            "scene=\(geometry.coordinateSpace.bounds.size)",
+            "scene=\(scene.coordinateSpace.bounds.size)",
             "screen=\(scene.screen.bounds.size)",
             "mainScreen=\(scene.screen === UIScreen.main)",
             "idiom=\(UIDevice.current.userInterfaceIdiom.rawValue)",
