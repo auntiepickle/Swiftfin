@@ -23,6 +23,13 @@ struct VideoPlayer: View {
 
     let mediaSession: MediaSession
 
+    /// Keeps the display, or the Apple TV, from sleeping while playback is requested.
+    private var keepsDisplayAwake: Bool {
+        mediaSession.state != .stopped &&
+            mediaSession.state != .error &&
+            mediaSession.playbackRequestStatus == .playing
+    }
+
     #if os(iOS)
     @ContentBuilder
     private var remotePlaybackBody: some View {
@@ -99,6 +106,12 @@ struct VideoPlayer: View {
             if newState == .stopped, !viewState.isBeingDismissed {
                 router.dismiss()
             }
+        }
+        .onChange(of: keepsDisplayAwake, initial: true) { _, newValue in
+            UIApplication.shared.isIdleTimerDisabled = newValue
+        }
+        .onDisappear {
+            UIApplication.shared.isIdleTimerDisabled = false
         }
         .alert(
             L10n.error,
