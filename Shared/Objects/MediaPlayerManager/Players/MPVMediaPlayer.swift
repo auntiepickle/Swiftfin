@@ -20,7 +20,15 @@ final class MPVMediaPlayer {
     let displayTitle = MediaPlayerType.mpv.displayTitle
     let playbackProfile = PlaybackProfile.local(.mpv)
 
-    let player = MPVPlayer(configuration: .init(audio: .init(audioSession: .hostManaged)))
+    // A deeper cache rides out gaps in live TV sources; mpv's HLS demuxer already starts 3 segments behind live
+    let player = MPVPlayer(
+        configuration: .init(
+            audio: .init(audioSession: .hostManaged),
+            initialBufferDuration: .seconds(2),
+            networkCacheDuration: .seconds(30),
+            rebufferDuration: .seconds(3)
+        )
+    )
     private let textSubtitles = TextSubtitlePresentation()
 
     @ObservationIgnored
