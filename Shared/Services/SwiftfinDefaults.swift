@@ -83,7 +83,12 @@ extension Defaults.Keys {
     static let selectUserAllServersSplashscreen: Key<SelectUserServerSelection> = AppKey("selectUserAllServersSplashscreen", default: .all)
     static let selectUserUseSplashscreen: Key<Bool> = AppKey("selectUserUseSplashscreen", default: true)
 
+    #if os(tvOS)
+    // Signing out on the user picker makes the app ignore remote PlayNow commands
+    static let signOutOnBackground: Key<Bool> = AppKey("signOutOnBackground", default: false)
+    #else
     static let signOutOnBackground: Key<Bool> = AppKey("signOutOnBackground", default: true)
+    #endif
     static let signOutOnClose: Key<Bool> = AppKey("signOutOnClose", default: false)
 }
 
