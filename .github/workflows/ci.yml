@@ -1,10 +1,11 @@
 name: "Build 🔨"
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
   push:
-    branches: [ main ]
+    branches: [ main, 'duo/**', 'streaming/**' ]
     paths:
       - '**'
       - '!Translations/*.lproj/**'
@@ -82,7 +83,7 @@ jobs:
               "xcodeVersion:$XCODE_VERSION"
 
       - name: Save Swift packages
-        if: ${{ (github.event_name == 'push' || github.event_name == 'schedule') && steps.swift-packages.outputs.cache-hit != 'true' }}
+        if: ${{ (github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && steps.swift-packages.outputs.cache-hit != 'true' }}
         uses: actions/cache/save@v6
         with:
           path: |
@@ -109,3 +110,10 @@ jobs:
           path: fastlane/build/*-unsigned.ipa
           if-no-files-found: error
           compression-level: 0
+
+      - name: Upload dSYMs
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.scheme }}-dSYMs
+          path: fastlane/build/*.xcarchive/dSYMs
+          if-no-files-found: warn
